@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cost Per Operator Calculator</title>
+  <title>Operator Cost & Pouch Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,14 +11,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 50px;
+      margin-top: 40px;
     }
     .calculator {
       background: white;
       padding: 2em;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      width: 300px;
+      width: 360px;
     }
     h2 {
       text-align: center;
@@ -36,39 +36,73 @@
       border: 1px solid #ccc;
     }
     .result {
-      font-size: 1.2em;
+      font-size: 1.05em;
       font-weight: bold;
       text-align: center;
       margin-top: 10px;
+    }
+    hr {
+      margin: 20px 0;
     }
   </style>
 </head>
 <body>
   <div class="calculator">
-    <h2>Operator Cost Calculator</h2>
+    <h2>Operator Cost & Pouch Calculator</h2>
+
     <label for="operators">Number of Operators</label>
     <input type="number" id="operators" value="1" min="0"/>
 
-    <label for="costPerOperator">Cost per Operator per Day</label>
-    <input type="number" id="costPerOperator" value="183.25" min="0" step="0.01"/>
+    <label for="shiftHours">Shift Hours per Day</label>
+    <input type="number" id="shiftHours" value="8" min="0"/>
 
-    <div class="result" id="totalCost">Total Cost: $183.25</div>
+    <label for="hourlyRate">Hourly Rate ($)</label>
+    <input type="number" id="hourlyRate" value="22.91" min="0" step="0.01"/>
+
+    <div class="result" id="dailyCost">Daily Cost per Operator: $0.00</div>
+    <div class="result" id="totalCost">Total Daily Cost (All Operators): $0.00</div>
+
+    <hr />
+
+    <label for="pouchesPerHour">Pouches per Hour</label>
+    <input type="number" id="pouchesPerHour" value="300" min="1"/>
+
+    <div class="result" id="costPerPouch">Cost per Pouch: $0.00</div>
   </div>
 
   <script>
     const operatorsInput = document.getElementById("operators");
-    const costInput = document.getElementById("costPerOperator");
-    const resultDiv = document.getElementById("totalCost");
+    const shiftHoursInput = document.getElementById("shiftHours");
+    const hourlyRateInput = document.getElementById("hourlyRate");
+    const pouchesPerHourInput = document.getElementById("pouchesPerHour");
 
-    function updateTotal() {
+    const dailyCostDisplay = document.getElementById("dailyCost");
+    const totalCostDisplay = document.getElementById("totalCost");
+    const costPerPouchDisplay = document.getElementById("costPerPouch");
+
+    function updateCalculations() {
       const operators = parseFloat(operatorsInput.value) || 0;
-      const cost = parseFloat(costInput.value) || 0;
-      const total = operators * cost;
-      resultDiv.textContent = `Total Cost: $${total.toFixed(2)}`;
+      const shiftHours = parseFloat(shiftHoursInput.value) || 0;
+      const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
+      const pouchesPerHour = parseFloat(pouchesPerHourInput.value) || 1;
+
+      const laborCostPerHour = operators * hourlyRate;
+      const dailyCost = shiftHours * hourlyRate;
+      const totalCost = operators * dailyCost;
+      const costPerPouch = laborCostPerHour / pouchesPerHour;
+
+      dailyCostDisplay.textContent = `Daily Cost per Operator: $${dailyCost.toFixed(2)}`;
+      totalCostDisplay.textContent = `Total Daily Cost (All Operators): $${totalCost.toFixed(2)}`;
+      costPerPouchDisplay.textContent = `Cost per Pouch: $${costPerPouch.toFixed(4)}`;
     }
 
-    operatorsInput.addEventListener("input", updateTotal);
-    costInput.addEventListener("input", updateTotal);
+    // Bind updates
+    operatorsInput.addEventListener("input", updateCalculations);
+    shiftHoursInput.addEventListener("input", updateCalculations);
+    hourlyRateInput.addEventListener("input", updateCalculations);
+    pouchesPerHourInput.addEventListener("input", updateCalculations);
+
+    updateCalculations(); // initial
   </script>
 </body>
 </html>
